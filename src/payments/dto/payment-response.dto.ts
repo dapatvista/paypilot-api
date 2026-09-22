@@ -37,3 +37,11 @@ export class CreatePaymentResponseDto extends PaymentResponseDto {
   @ApiProperty({ description: 'Pass to Stripe.js/Elements on the frontend to confirm payment' })
   clientSecret!: string;
 }
+
+export class CreateCheckoutSessionResponseDto extends PaymentResponseDto {
+  @Expose()
+  @ApiProperty({
+    description: 'Hosted Stripe Checkout URL — open directly, no login or app UI required',
+  })
+  checkoutUrl!: string;
+}

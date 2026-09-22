@@ -61,6 +61,7 @@ export class StripeWebhookController {
     switch (event.type) {
       case 'payment_intent.succeeded': {
         const intent = event.data.object as Stripe.PaymentIntent;
+        await this.resolvePaymentIdFromIntent(intent);
         await this.paymentsService.updateStatusByStripePaymentIntentId(intent.id, 'succeeded');
         const payment = await this.paymentsService.findByStripePaymentIntentId(intent.id);
         if (payment) {
@@ -75,6 +76,7 @@ export class StripeWebhookController {
       }
       case 'payment_intent.payment_failed': {
         const intent = event.data.object as Stripe.PaymentIntent;
+        await this.resolvePaymentIdFromIntent(intent);
         await this.paymentsService.updateStatusByStripePaymentIntentId(intent.id, 'failed');
         break;
       }
@@ -83,5 +85,25 @@ export class StripeWebhookController {
     }
 
     return { received: true };
+  }
+
+  // Checkout Session payments never had their payment_intent id stored
+  // in advance (see PaymentsService.createCheckoutSessionForBill — the id
+  // doesn't exist until Stripe creates it, which is what just happened).
+  // The first event for such an intent won't match anything via
+  // findByStripePaymentIntentId, so fall back to the paypilotPaymentId we
+  // put in payment_intent_data.metadata at session-creation time and
+  // backfill the row. A no-op for the Elements flow, which already has
+  // stripePaymentIntentId set at creation time.
+  private async resolvePaymentIdFromIntent(intent: Stripe.PaymentIntent): Promise<void> {
+    const existing = await this.paymentsService.findByStripePaymentIntentId(intent.id);
+    if (existing) return;
+
+    const paymentId = intent.metadata?.paypilotPaymentId;
+    if (!paymentId) {
+      this.logger.warn(`No paypilotPaymentId metadata on unrecognized payment_intent ${intent.id}`);
+      return;
+    }
+    await this.paymentsService.linkPaymentIntentIfMissing(Number(paymentId), intent.id);
   }
 }
