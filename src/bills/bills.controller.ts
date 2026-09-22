@@ -5,6 +5,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../database/schema';
 import { RemindersService } from '../reminders/reminders.service';
+import { PayLinkService } from '../payments/pay-link.service';
 import {
   computeNextDueDate,
   computeReminderDate,
@@ -27,6 +28,7 @@ export class BillsController {
     private readonly billsService: BillsService,
     @Inject(forwardRef(() => RemindersService))
     private readonly remindersService: RemindersService,
+    private readonly payLinkService: PayLinkService,
   ) {}
 
   @Post()
@@ -58,6 +60,7 @@ export class BillsController {
           bill_label: bill.label,
           amount: bill.estimatedMonthlyAmount,
           due_date: formatHumanDate(dueDate),
+          pay_token: this.payLinkService.sign(userId, bill.id),
         },
       });
       await this.billsService.markReminderScheduled(bill.id, toDateOnlyString(dueDate));

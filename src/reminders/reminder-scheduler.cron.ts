@@ -12,6 +12,7 @@ import {
   REMINDER_LEAD_DAYS,
 } from '../bills/due-date.util';
 import { BillsService } from '../bills/bills.service';
+import { PayLinkService } from '../payments/pay-link.service';
 import { RemindersService } from './reminders.service';
 
 // Recurring counterpart to the one-shot reminder scheduled when a bill is
@@ -29,6 +30,7 @@ export class ReminderSchedulerCron {
     @Inject(DRIZZLE) private readonly db: DrizzleDb,
     @Inject(forwardRef(() => BillsService)) private readonly billsService: BillsService,
     private readonly remindersService: RemindersService,
+    private readonly payLinkService: PayLinkService,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_8AM)
@@ -67,6 +69,7 @@ export class ReminderSchedulerCron {
             bill_label: row.billLabel,
             amount: row.estimatedMonthlyAmount,
             due_date: formatHumanDate(dueDate),
+            pay_token: this.payLinkService.sign(row.userId, row.billId),
           },
         });
         await this.billsService.markReminderScheduled(row.billId, dueDateStr);
