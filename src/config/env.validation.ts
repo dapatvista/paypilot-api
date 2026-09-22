@@ -29,6 +29,14 @@ class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   INTERNAL_API_KEY!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  STRIPE_SECRET_KEY!: string;
+
+  @IsOptional()
+  @IsString()
+  STRIPE_WEBHOOK_SECRET?: string;
 }
 
 export function validateEnv(config: Record<string, unknown>) {

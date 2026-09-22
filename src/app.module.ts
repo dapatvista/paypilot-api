@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { BillersModule } from './billers/billers.module';
 import { BillsModule } from './bills/bills.module';
+import { PaymentsModule } from './payments/payments.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -26,6 +28,8 @@ import { AppController } from './app.controller';
     UsersModule,
     BillersModule,
     BillsModule,
+    PaymentsModule,
+    WebhooksModule,
   ],
   controllers: [AppController],
   providers: [

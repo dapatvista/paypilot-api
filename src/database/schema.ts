@@ -7,6 +7,7 @@ import {
   mysqlEnum,
   json,
   index,
+  uniqueIndex,
 } from 'drizzle-orm/mysql-core';
 
 export const users = mysqlTable('users', {
@@ -77,3 +78,55 @@ export const bills = mysqlTable(
 
 export type Bill = typeof bills.$inferSelect;
 export type NewBill = typeof bills.$inferInsert;
+
+export const payments = mysqlTable(
+  'payments',
+  {
+    id: int('id').autoincrement().primaryKey(),
+    userId: int('user_id').notNull(),
+    billId: int('bill_id').notNull(),
+    amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+    currency: varchar('currency', { length: 3 }).notNull().default('myr'),
+    stripePaymentIntentId: varchar('stripe_payment_intent_id', { length: 255 }),
+    status: mysqlEnum('status', ['pending', 'succeeded', 'failed', 'cancelled'])
+      .notNull()
+      .default('pending'),
+    billerPushStatus: mysqlEnum('biller_push_status', ['pending', 'success', 'failed'])
+      .notNull()
+      .default('pending'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
+  },
+  (table) => ({
+    userIdIdx: index('payments_user_id_idx').on(table.userId),
+    billIdIdx: index('payments_bill_id_idx').on(table.billId),
+    stripePaymentIntentIdIdx: uniqueIndex('payments_stripe_payment_intent_id_idx').on(
+      table.stripePaymentIntentId,
+    ),
+  }),
+);
+
+export type Payment = typeof payments.$inferSelect;
+export type NewPayment = typeof payments.$inferInsert;
+
+// Settlement (push-to-biller) is mocked, not wired to a real gateway —
+// see SettlementService. Every attempt is still logged here.
+export const billerPushAttempts = mysqlTable(
+  'biller_push_attempts',
+  {
+    id: int('id').autoincrement().primaryKey(),
+    paymentId: int('payment_id').notNull(),
+    requestPayload: json('request_payload'),
+    responsePayload: json('response_payload'),
+    resultCode: varchar('result_code', { length: 45 }),
+    resultDescription: varchar('result_description', { length: 255 }),
+    status: mysqlEnum('status', ['success', 'failed']).notNull(),
+    attemptedAt: timestamp('attempted_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    paymentIdIdx: index('biller_push_attempts_payment_id_idx').on(table.paymentId),
+  }),
+);
+
+export type BillerPushAttempt = typeof billerPushAttempts.$inferSelect;
+export type NewBillerPushAttempt = typeof billerPushAttempts.$inferInsert;
