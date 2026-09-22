@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNumber, IsPositive, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsInt, IsNumber, IsPositive, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 export class CreateBillDto {
   @ApiProperty({ example: 1, description: 'ID of the biller from GET /billers' })
@@ -26,4 +26,16 @@ export class CreateBillDto {
   @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()
   estimatedMonthlyAmount!: number;
+
+  @ApiProperty({
+    example: 15,
+    minimum: 1,
+    maximum: 31,
+    description:
+      'Day of month this bill is typically due. Clamped to the actual days in a given month (e.g. 31 on a 30-day month means the 30th). Drives the auto-scheduled reminder.',
+  })
+  @IsInt()
+  @Min(1)
+  @Max(31)
+  dueDayOfMonth!: number;
 }

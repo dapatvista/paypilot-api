@@ -36,6 +36,13 @@
       "when": 1790075398461,
       "tag": "0004_violet_arachne",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1790075491243,
+      "tag": "0005_slow_mantis",
+      "breakpoints": true
     }
   ]
 }

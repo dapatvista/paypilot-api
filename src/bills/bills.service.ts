@@ -11,6 +11,7 @@ export type BillWithBiller = {
   label: string;
   billerAccountNumber: string;
   estimatedMonthlyAmount: string;
+  dueDayOfMonth: number;
   status: string;
   createdAt: Date;
   biller: {
@@ -42,6 +43,7 @@ export class BillsService {
         billerAccountNumber: dto.billerAccountNumber,
         label: dto.label,
         estimatedMonthlyAmount: dto.estimatedMonthlyAmount.toFixed(2),
+        dueDayOfMonth: dto.dueDayOfMonth,
       })
       .$returningId();
 
@@ -60,6 +62,7 @@ export class BillsService {
         label: bills.label,
         billerAccountNumber: bills.billerAccountNumber,
         estimatedMonthlyAmount: bills.estimatedMonthlyAmount,
+        dueDayOfMonth: bills.dueDayOfMonth,
         status: bills.status,
         createdAt: bills.createdAt,
         billerId: billers.id,
@@ -82,6 +85,7 @@ export class BillsService {
         label: bills.label,
         billerAccountNumber: bills.billerAccountNumber,
         estimatedMonthlyAmount: bills.estimatedMonthlyAmount,
+        dueDayOfMonth: bills.dueDayOfMonth,
         status: bills.status,
         createdAt: bills.createdAt,
         billerId: billers.id,
@@ -97,11 +101,19 @@ export class BillsService {
     return row ? this.toBillWithBiller(row) : undefined;
   }
 
+  async markReminderScheduled(billId: number, dueDate: string): Promise<void> {
+    await this.db
+      .update(bills)
+      .set({ lastReminderForDueDate: dueDate })
+      .where(eq(bills.id, billId));
+  }
+
   private toBillWithBiller(row: {
     id: number;
     label: string;
     billerAccountNumber: string;
     estimatedMonthlyAmount: string;
+    dueDayOfMonth: number;
     status: string;
     createdAt: Date;
     billerId: number;
@@ -114,6 +126,7 @@ export class BillsService {
       label: row.label,
       billerAccountNumber: row.billerAccountNumber,
       estimatedMonthlyAmount: row.estimatedMonthlyAmount,
+      dueDayOfMonth: row.dueDayOfMonth,
       status: row.status,
       createdAt: row.createdAt,
       biller: {

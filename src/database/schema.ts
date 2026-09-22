@@ -3,6 +3,7 @@ import {
   varchar,
   int,
   decimal,
+  date,
   datetime,
   timestamp,
   mysqlEnum,
@@ -67,6 +68,15 @@ export const bills = mysqlTable(
       precision: 10,
       scale: 2,
     }).notNull(),
+    // Day of month this bill is typically due (1-31, clamped to the actual
+    // days in a given month — e.g. 31 on a 30-day month means the 30th).
+    // Drives the auto-reminder on connect and the recurring reminder cron;
+    // see src/bills/due-date.util.ts.
+    dueDayOfMonth: int('due_day_of_month').notNull(),
+    // The due date (not the reminder send date) of the most recent cycle a
+    // reminder was already scheduled for — prevents the daily cron from
+    // scheduling a duplicate reminder for the same cycle.
+    lastReminderForDueDate: date('last_reminder_for_due_date', { mode: 'string' }),
     status: mysqlEnum('status', ['active', 'archived']).notNull().default('active'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),

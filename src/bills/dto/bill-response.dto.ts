@@ -40,6 +40,10 @@ export class BillResponseDto {
 
   @Expose()
   @ApiProperty()
+  dueDayOfMonth!: number;
+
+  @Expose()
+  @ApiProperty()
   status!: string;
 
   @Expose()
