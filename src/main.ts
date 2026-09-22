@@ -27,7 +27,7 @@ async function bootstrap() {
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('PayPilot API')
-    .setDescription('Orchestrates PayHub billers, Teekrr WhatsApp reminders, and Stripe payments')
+    .setDescription('Own biller catalogue, Teekrr WhatsApp reminders, and Stripe payments')
     .setVersion('0.1.0')
     .addBearerAuth()
     .build();

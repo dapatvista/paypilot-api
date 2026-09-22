@@ -37,6 +37,18 @@ class EnvironmentVariables {
   @IsOptional()
   @IsString()
   STRIPE_WEBHOOK_SECRET?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  TEEKRR_BASE_URL!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  TEEKRR_API_KEY!: string;
+
+  @IsOptional()
+  @IsString()
+  TEEKRR_WHATSAPP_TEMPLATE_NAME?: string;
 }
 
 export function validateEnv(config: Record<string, unknown>) {

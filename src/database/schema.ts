@@ -3,6 +3,7 @@ import {
   varchar,
   int,
   decimal,
+  datetime,
   timestamp,
   mysqlEnum,
   json,
@@ -130,3 +131,26 @@ export const billerPushAttempts = mysqlTable(
 
 export type BillerPushAttempt = typeof billerPushAttempts.$inferSelect;
 export type NewBillerPushAttempt = typeof billerPushAttempts.$inferInsert;
+
+export const reminders = mysqlTable(
+  'reminders',
+  {
+    id: int('id').autoincrement().primaryKey(),
+    userId: int('user_id').notNull(),
+    billId: int('bill_id').notNull(),
+    scheduledFor: datetime('scheduled_for').notNull(),
+    status: mysqlEnum('status', ['scheduled', 'sent', 'cancelled', 'failed'])
+      .notNull()
+      .default('scheduled'),
+    externalMessageRef: varchar('external_message_ref', { length: 128 }),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
+  },
+  (table) => ({
+    billIdIdx: index('reminders_bill_id_idx').on(table.billId),
+    scheduledForIdx: index('reminders_scheduled_for_idx').on(table.scheduledFor),
+  }),
+);
+
+export type Reminder = typeof reminders.$inferSelect;
+export type NewReminder = typeof reminders.$inferInsert;

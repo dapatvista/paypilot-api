@@ -14,4 +14,9 @@ export default () => ({
     secretKey: process.env.STRIPE_SECRET_KEY as string,
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
   },
+  teekrr: {
+    baseUrl: process.env.TEEKRR_BASE_URL as string,
+    apiKey: process.env.TEEKRR_API_KEY as string,
+    whatsappTemplateName: process.env.TEEKRR_WHATSAPP_TEMPLATE_NAME,
+  },
 });

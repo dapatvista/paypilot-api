@@ -11,6 +11,7 @@ import { BillersModule } from './billers/billers.module';
 import { BillsModule } from './bills/bills.module';
 import { PaymentsModule } from './payments/payments.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { RemindersModule } from './reminders/reminders.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -30,6 +31,7 @@ import { AppController } from './app.controller';
     BillsModule,
     PaymentsModule,
     WebhooksModule,
+    RemindersModule,
   ],
   controllers: [AppController],
   providers: [
