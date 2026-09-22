@@ -4,7 +4,13 @@ import { eq } from 'drizzle-orm';
 import { DRIZZLE } from '../database/database.module';
 import { DrizzleDb } from '../database/drizzle.types';
 import { bills, billers, users } from '../database/schema';
-import { computeNextDueDate, computeReminderDate, toDateOnlyString, REMINDER_LEAD_DAYS } from '../bills/due-date.util';
+import {
+  computeNextDueDate,
+  computeReminderDate,
+  formatHumanDate,
+  toDateOnlyString,
+  REMINDER_LEAD_DAYS,
+} from '../bills/due-date.util';
 import { BillsService } from '../bills/bills.service';
 import { RemindersService } from './reminders.service';
 
@@ -60,6 +66,7 @@ export class ReminderSchedulerCron {
             biller_name: row.billerName,
             bill_label: row.billLabel,
             amount: row.estimatedMonthlyAmount,
+            due_date: formatHumanDate(dueDate),
           },
         });
         await this.billsService.markReminderScheduled(row.billId, dueDateStr);

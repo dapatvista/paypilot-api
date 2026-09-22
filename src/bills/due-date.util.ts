@@ -35,6 +35,16 @@ export function toDateOnlyString(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
+// "22 September 2026" — for the reminder template's Due Date field.
+export function formatHumanDate(d: Date): string {
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(d);
+}
+
 function startOfUtcDay(d: Date): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
 }

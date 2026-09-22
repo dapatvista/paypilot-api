@@ -5,7 +5,13 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../database/schema';
 import { RemindersService } from '../reminders/reminders.service';
-import { computeNextDueDate, computeReminderDate, toDateOnlyString, REMINDER_LEAD_DAYS } from './due-date.util';
+import {
+  computeNextDueDate,
+  computeReminderDate,
+  formatHumanDate,
+  toDateOnlyString,
+  REMINDER_LEAD_DAYS,
+} from './due-date.util';
 import { BillsService } from './bills.service';
 import { CreateBillDto } from './dto/create-bill.dto';
 import { BillResponseDto } from './dto/bill-response.dto';
@@ -51,6 +57,7 @@ export class BillsController {
           biller_name: bill.biller.name,
           bill_label: bill.label,
           amount: bill.estimatedMonthlyAmount,
+          due_date: formatHumanDate(dueDate),
         },
       });
       await this.billsService.markReminderScheduled(bill.id, toDateOnlyString(dueDate));
