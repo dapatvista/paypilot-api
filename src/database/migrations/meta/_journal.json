@@ -15,6 +15,13 @@
       "when": 1790075197870,
       "tag": "0001_yielding_spiral",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1790075245361,
+      "tag": "0002_small_punisher",
+      "breakpoints": true
     }
   ]
 }

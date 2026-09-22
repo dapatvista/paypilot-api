@@ -2,6 +2,7 @@ import {
   mysqlTable,
   varchar,
   int,
+  decimal,
   timestamp,
   mysqlEnum,
   json,
@@ -48,3 +49,31 @@ export const billers = mysqlTable(
 
 export type Biller = typeof billers.$inferSelect;
 export type NewBiller = typeof billers.$inferInsert;
+
+// There is no bill-inquiry step in this flow — the user enters their own
+// estimated monthly commitment at registration (`bills.estimatedMonthlyAmount`).
+
+export const bills = mysqlTable(
+  'bills',
+  {
+    id: int('id').autoincrement().primaryKey(),
+    userId: int('user_id').notNull(),
+    billerId: int('biller_id').notNull(),
+    billerAccountNumber: varchar('biller_account_number', { length: 128 }).notNull(),
+    label: varchar('label', { length: 255 }).notNull(),
+    estimatedMonthlyAmount: decimal('estimated_monthly_amount', {
+      precision: 10,
+      scale: 2,
+    }).notNull(),
+    status: mysqlEnum('status', ['active', 'archived']).notNull().default('active'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
+  },
+  (table) => ({
+    userIdIdx: index('bills_user_id_idx').on(table.userId),
+    billerIdIdx: index('bills_biller_id_idx').on(table.billerId),
+  }),
+);
+
+export type Bill = typeof bills.$inferSelect;
+export type NewBill = typeof bills.$inferInsert;
