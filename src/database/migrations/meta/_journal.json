@@ -8,6 +8,13 @@
       "when": 1790058274060,
       "tag": "0000_tidy_purifiers",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1790075197870,
+      "tag": "0001_yielding_spiral",
+      "breakpoints": true
     }
   ]
 }

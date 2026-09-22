@@ -7,6 +7,7 @@ import { validateEnv } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { BillersModule } from './billers/billers.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -22,6 +23,7 @@ import { AppController } from './app.controller';
     DatabaseModule,
     AuthModule,
     UsersModule,
+    BillersModule,
   ],
   controllers: [AppController],
   providers: [
